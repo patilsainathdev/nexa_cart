@@ -16,8 +16,11 @@ import {
   fetchProductsStart,
   fetchProductsSuccess,
   fetchProductsFailure,
+  fetchCartItemsSuccess
 } from "@/store/slice/ProductSlice";
 import { Product } from "@/types/products";
+import cartServices from "@/services/cart/cart-services";
+import ProductCard from "./ProductCard";
 
 const PREMIUM_CATALOG = [
   {
@@ -61,20 +64,32 @@ export default function UserHomePage() {
   // const [productList, setProductList] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  // const addToCart = async (id: string) => {
+  //   const cartData = {
+  //     productId: id,
+  //     quantity: 1,
+  //   };
+  //   const response = await cartServices.updateUserCart(cartData);
+  //   console.log("addToCart response", response);
+  // };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         dispatch(fetchProductsStart());
-        const response = await productService.getProductList<{
-          success: boolean;
-          data: Product[];
-        }>();
-        // const productsArray = Array.isArray(response)
-        //   ? response
-        //   : response?.data || [];
+        // const response = await productService.getProductList<{
+        //   success: boolean;
+        //   data: Product[];
+        // }>();
 
-        // setProductList(productsArray);
+        const response: any = await productService.getProductList();
+
+        const cartResponse:any = await cartServices.getUserCart();
+        console.log("cartResponse", cartResponse);
+        if(cartResponse.data ){
+          dispatch(fetchCartItemsSuccess(cartResponse.data.items));
+        }
         dispatch(fetchProductsSuccess(response.data));
         // setLoading(false);
       } catch (error) {
@@ -198,59 +213,16 @@ export default function UserHomePage() {
 
         {/* High-Fidelity Premiu m Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
-          {loading && (
-            <div className="group relative flex flex-col justify-center h-full bg-transparent">
-              Loading Product Data...
-            </div>
-          )}
           {loading ? (
             <div className="group relative flex flex-col justify-center h-full bg-transparent">
               Loading Product Data...
             </div>
           ) : (
-            items.slice(0, 4).map((item, index) => (
-              <div
-                key={item._id}
-                className="group relative flex flex-col justify-between h-full bg-transparent"
-              >
-                {/* Image Box with Micro Thin Framing */}
-                <div className="relative aspect-[3/4] w-full bg-[#0D0D11] border border-zinc-900/80 p-2 overflow-hidden mb-6 transition-all duration-500 group-hover:border-zinc-700">
-                  <span className="absolute top-4 left-4 z-20 font-mono text-[10px] text-zinc-600 tracking-widest uppercase bg-black/40 backdrop-blur-md px-2 py-0.5">
-                    [{item.status}]
-                  </span>
-
-                  <div className="w-full h-full overflow-hidden relative bg-zinc-950">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      className="h-full w-full object-cover opacity-70 transition duration-700 group-hover:scale-102 group-hover:opacity-100 grayscale group-hover:grayscale-0"
-                    />
-                  </div>
-                </div>
-
-                {/* Text Layout Block */}
-                <div className="space-y-2 px-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono tracking-widest text-zinc-600">
-                    <span>{item.category}</span>
-                    <span>ID // {index}</span>
-                  </div>
-
-                  <h3 className="font-semibold text-zinc-200 text-base tracking-wide uppercase transition-colors group-hover:text-white">
-                    {item.title}
-                  </h3>
-
-                  <div className="pt-3 border-t border-zinc-950 flex items-center justify-between">
-                    <span className="text-lg font-mono font-light text-white">
-                      ${item.price.toFixed(2)}
-                    </span>
-
-                    <button className="cursor-pointer h-9 px-4 border border-zinc-800 text-[10px] font-mono uppercase tracking-widest text-zinc-400 hover:text-black hover:bg-white hover:border-white transition-all duration-300 flex items-center gap-1">
-                      <Plus className="h-3 w-3" /> ADD TO CART
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))
+            items
+              .slice(0, 4)
+              .map((item, index) => (
+                <ProductCard productData={item} key={index} id={index} />
+              ))
           )}
         </div>
       </section>

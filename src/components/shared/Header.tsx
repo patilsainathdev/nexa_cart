@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   ShoppingBag,
@@ -8,8 +10,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 
-export default async function Header() {
+export default function Header() {
+
+  const { cartItems } = useAppSelector((state) => state.products);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-900 bg-[#030303]/80 backdrop-blur-md">
@@ -71,7 +76,7 @@ export default async function Header() {
             >
               <ShoppingBag className="h-4 w-4 stroke-[1.5]" />
               <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-none bg-indigo-600 text-[9px] font-mono font-bold text-white shadow-md shadow-indigo-600/20">
-                2
+                {cartItems.length}
               </span>
             </Button>
           </div>
