@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Terminal, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authServices } from "@/services/auth/auth-serveice";
+import { authClient, useSession } from "@/lib/auth-client";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,6 +16,8 @@ export default function LoginPage() {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { data: session, isPending } = useSession();
 
   const handleLogin = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -27,10 +31,15 @@ export default function LoginPage() {
 
     try {
       // const payload = { email, password };
-      console.log("dmkald");
-      const response = await authServices.login(email, password);
-      console.log("login Response", response);
+      // const response = await authServices.login(email, password);
+      // router.push("/");
+      const { data, error } = await authClient.signIn.email({
+        email,
+        password,
+      });
       router.push("/");
+      router.refresh();
+
     } catch (err: unknown) {
       // console.log('error', (err as Error).error)
       setError((err as Error).error || "Authentication failed.");
@@ -41,6 +50,24 @@ export default function LoginPage() {
       setPassword("");
     }
   };
+
+  useEffect(() => {
+    if (!isPending && session) {
+      console.log("Active session detected, redirecting...");
+      router.push("/");
+    }
+  }, [session, isPending, router]);
+
+  // useEffect(() => {
+  //   const { data: session, isPending, error } = useSession();
+  //   if (!isPending) {
+  //     if (!error || session) {
+  //       router.push("/");
+  //       console.log('user session')
+  //       console.log(isPending, error, session)
+  //     }
+  //   }
+  // }, [])
 
   return (
     <div className="w-full bg-[#030303] text-[#F4F4F5] min-h-screen flex items-center justify-center p-8 font-mono">
@@ -122,13 +149,13 @@ export default function LoginPage() {
 
         {/* Bottom Shift Matrix Directional Link */}
         <div className="border-t border-zinc-950 pt-4 text-center text-[11px] text-zinc-500">
-          Unregistered node?{" "}
-          <a
+          New User?{" "}
+          <Link
             href="/register"
             className="text-white hover:text-indigo-400 transition-colors underline underline-offset-4"
           >
-            Initialize an identity
-          </a>
+            Create User Account
+          </Link>
         </div>
       </div>
     </div>

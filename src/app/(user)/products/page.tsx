@@ -10,6 +10,7 @@ import {
   fetchProductsFailure,
   fetchProductsSuccess,
 } from "@/store/slice/ProductSlice";
+import ProductCard from "@/components/shared/ProductCard";
 
 // Explicit sort type choices
 type SortMode = "none" | "price-asc" | "price-desc";
@@ -55,10 +56,7 @@ export default function AllProductsPage() {
       const fetchProduct = async () => {
         try {
           dispatch(fetchProductsStart());
-          const response = await productService.getProductList<{
-            success: boolean;
-            data: Product[];
-          }>();
+          const response: any = await productService.getProductList();
           dispatch(fetchProductsSuccess(response.data));
         } catch (err) {
           console.error(err);
@@ -150,39 +148,8 @@ export default function AllProductsPage() {
               NO ASSETS MATCHING CURRENT MATRIX SELECTION CELL BUFFER...
             </div>
           )}
-          {displayedItems.map((item) => (
-            <div
-              key={item._id}
-              className="group relative flex flex-col justify-between bg-transparent border border-zinc-900 p-4 transition-all duration-300 hover:border-zinc-800"
-            >
-              <div className="relative aspect-square w-full bg-[#0D0D11] border border-zinc-900 p-2 overflow-hidden mb-4">
-                <span className="absolute top-4 left-4 z-20 text-[9px] text-zinc-500 font-mono bg-black/50 px-2 py-0.5">
-                  ID // {item._id}
-                </span>
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  className="w-full h-full object-cover opacity-60 transition duration-500 group-hover:scale-102 group-hover:opacity-100 grayscale group-hover:grayscale-0"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <span className="text-[10px] text-indigo-400 tracking-widest block font-bold">
-                  {item.category}
-                </span>
-                <h3 className="text-sm font-semibold tracking-wide text-zinc-200 uppercase truncate group-hover:text-white transition-colors">
-                  {item.title}
-                </h3>
-                <div className="pt-3 border-t border-zinc-900 flex items-center justify-between">
-                  <span className="text-base font-light text-white">
-                    ${Number(item.price).toFixed(2)}
-                  </span>
-                  <button className="h-8 px-3 border border-zinc-900 text-[9px] tracking-widest text-zinc-400 hover:text-black hover:bg-white hover:border-white transition-all flex items-center gap-1 rounded-none">
-                    <Plus className="h-2.5 w-2.5" /> ADD TO CART
-                  </button>
-                </div>
-              </div>
-            </div>
+          {displayedItems.map((item, index) => (
+            <ProductCard productData={item} key={item._id} id={index} />
           ))}
         </div>
       </div>

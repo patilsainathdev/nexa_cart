@@ -4,10 +4,9 @@ import { useState } from "react";
 import Image from "next/image";
 import { Product } from "@/types/products";
 import { Minus, Plus, Loader2 } from "lucide-react";
-import { useAppSelector } from "@/store/store";
+import { useAppSelector, useAppDispatch } from "@/store/store";
 import cartServices from "@/services/cart/cart-services";
-import { Button } from "@base-ui/react";
-import { useDispatch } from "react-redux";
+import { Button } from "@/components/ui/button";
 import { fetchCartItemsSuccess } from "@/store/slice/ProductSlice";
 
 interface ProductDataProps {
@@ -18,7 +17,7 @@ interface ProductDataProps {
 export default function ProductCard({ productData, id }: ProductDataProps) {
   const { _id, title, category, price, status, imageUrl } = productData;
   const { cartItems } = useAppSelector((state) => state.products);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   // Track async request operations to prevent user multi-click spam
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -60,9 +59,9 @@ export default function ProductCard({ productData, id }: ProductDataProps) {
       }
 
       fetchCartData();
-      
+
     } catch (error) {
-      console.error("Cart transaction pipeline failure:", error);
+      console.error("Cart transaction failure:", error);
     } finally {
       setIsUpdating(false);
     }
@@ -72,7 +71,7 @@ export default function ProductCard({ productData, id }: ProductDataProps) {
     <div className="group relative flex flex-col justify-between h-full bg-transparent">
 
       {/* Image Box with Micro Thin Framing */}
-      <div className="relative aspect-[3/4] w-full bg-[#0D0D11] border border-zinc-900/80 p-2 overflow-hidden mb-6 transition-all duration-500 group-hover:border-zinc-700">
+      <div className="relative aspect-3/4 w-full bg-[#0D0D11] border border-zinc-900/80 p-2 overflow-hidden mb-6 transition-all duration-500 group-hover:border-zinc-700">
         {status && (
           <span className="absolute top-4 left-4 z-20 font-mono text-[10px] text-zinc-400 tracking-widest uppercase bg-black/60 backdrop-blur-md px-2 py-0.5 border border-zinc-800">
             [{status}]

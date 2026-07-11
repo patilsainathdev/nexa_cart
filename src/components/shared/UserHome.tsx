@@ -85,11 +85,11 @@ export default function UserHomePage() {
 
         const response: any = await productService.getProductList();
 
-        const cartResponse:any = await cartServices.getUserCart();
-        console.log("cartResponse", cartResponse);
-        if(cartResponse.data ){
-          dispatch(fetchCartItemsSuccess(cartResponse.data.items));
-        }
+        // const cartResponse:any = await cartServices.getUserCart();
+        // console.log("cartResponse", cartResponse);
+        // if(cartResponse.data ){
+        //   dispatch(fetchCartItemsSuccess(cartResponse.data.items));
+        // }
         dispatch(fetchProductsSuccess(response.data));
         // setLoading(false);
       } catch (error) {
